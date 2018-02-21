@@ -26,21 +26,21 @@ contract('MyEtherHODL', function ([_, wallet1, wallet2, wallet3, wallet4, wallet
     it('should receive ether', async function () {
         const hodl = await MyEtherHODL.new();
 
-        await web3.eth.sendTransaction({ from: wallet1, to: hodl.address, value: 100 });
+        await web3.eth.sendTransaction({ from: wallet1, to: hodl.address, value: 100, gas: 500000 });
 
         (await hodl.balanceOf.call(_)).should.be.bignumber.equal(0);
         (await hodl.balanceOf.call(wallet1)).should.be.bignumber.equal(100);
         (await hodl.balanceOf.call(wallet2)).should.be.bignumber.equal(0);
         (await hodl.balanceOf.call(wallet3)).should.be.bignumber.equal(0);
 
-        await web3.eth.sendTransaction({ from: wallet2, to: hodl.address, value: 200 });
+        await web3.eth.sendTransaction({ from: wallet2, to: hodl.address, value: 200, gas: 500000 });
 
         (await hodl.balanceOf.call(_)).should.be.bignumber.equal(0);
         (await hodl.balanceOf.call(wallet1)).should.be.bignumber.equal(100);
         (await hodl.balanceOf.call(wallet2)).should.be.bignumber.equal(200);
         (await hodl.balanceOf.call(wallet3)).should.be.bignumber.equal(0);
 
-        await web3.eth.sendTransaction({ from: wallet3, to: hodl.address, value: 300 });
+        await web3.eth.sendTransaction({ from: wallet3, to: hodl.address, value: 300, gas: 500000 });
 
         (await hodl.balanceOf.call(_)).should.be.bignumber.equal(0);
         (await hodl.balanceOf.call(wallet1)).should.be.bignumber.equal(100);
@@ -51,13 +51,13 @@ contract('MyEtherHODL', function ([_, wallet1, wallet2, wallet3, wallet4, wallet
     it('should set time lock correctly', async function () {
         const hodl = await MyEtherHODL.new();
 
-        await web3.eth.sendTransaction({ from: wallet1, to: hodl.address, value: 100 });
+        await web3.eth.sendTransaction({ from: wallet1, to: hodl.address, value: 100, gas: 500000 });
         (await hodl.lockedUntil.call(wallet1)).toNumber().should.be.within(
             latestTime() + duration.years(1) - duration.minutes(1),
             latestTime() + duration.years(1)
         );
 
-        await web3.eth.sendTransaction({ from: wallet2, to: hodl.address, value: 200, data: data1y });
+        await web3.eth.sendTransaction({ from: wallet2, to: hodl.address, value: 200, data: data1y, gas: 500000 });
         (await hodl.lockedUntil.call(wallet1)).toNumber().should.be.within(
             latestTime() + duration.years(1) - duration.minutes(1),
             latestTime() + duration.years(1)
@@ -67,7 +67,7 @@ contract('MyEtherHODL', function ([_, wallet1, wallet2, wallet3, wallet4, wallet
             latestTime() + duration.years(1)
         );
 
-        await web3.eth.sendTransaction({ from: wallet3, to: hodl.address, value: 300, data: data2y });
+        await web3.eth.sendTransaction({ from: wallet3, to: hodl.address, value: 300, data: data2y, gas: 500000 });
         (await hodl.lockedUntil.call(wallet1)).toNumber().should.be.within(
             latestTime() + duration.years(1) - duration.minutes(1),
             latestTime() + duration.years(1)
@@ -81,7 +81,7 @@ contract('MyEtherHODL', function ([_, wallet1, wallet2, wallet3, wallet4, wallet
             latestTime() + duration.years(2)
         );
 
-        await web3.eth.sendTransaction({ from: wallet4, to: hodl.address, value: 400, data: data3y });
+        await web3.eth.sendTransaction({ from: wallet4, to: hodl.address, value: 400, data: data3y, gas: 500000 });
         (await hodl.lockedUntil.call(wallet1)).toNumber().should.be.within(
             latestTime() + duration.years(1) - duration.minutes(1),
             latestTime() + duration.years(1)
@@ -103,7 +103,7 @@ contract('MyEtherHODL', function ([_, wallet1, wallet2, wallet3, wallet4, wallet
     it('should not get fees when party is after period', async function () {
         const hodl = await MyEtherHODL.new();
 
-        await web3.eth.sendTransaction({from: wallet1, to: hodl.address, value: 100});
+        await web3.eth.sendTransaction({from: wallet1, to: hodl.address, value: 100, gas: 500000});
         (await hodl.lockedUntil.call(wallet1)).toNumber().should.be.within(
             latestTime() + duration.years(1) - duration.minutes(1),
             latestTime() + duration.years(1)
@@ -113,7 +113,7 @@ contract('MyEtherHODL', function ([_, wallet1, wallet2, wallet3, wallet4, wallet
         await advanceBlock();
 
         const balanceBefore = new BigNumber(web3.eth.getBalance(wallet1));
-        const txid = await web3.eth.sendTransaction({from: wallet1, to: hodl.address, value: 0, data: dataParty});
+        const txid = await web3.eth.sendTransaction({from: wallet1, to: hodl.address, data: dataParty, gas: 500000});
         const transaction = await web3.eth.getTransaction(txid);
         const receipt = await web3.eth.getTransactionReceipt(txid);
         const balanceAfter = new BigNumber(web3.eth.getBalance(wallet1));
@@ -124,7 +124,7 @@ contract('MyEtherHODL', function ([_, wallet1, wallet2, wallet3, wallet4, wallet
     it('should get fees when party is early', async function () {
         const hodl = await MyEtherHODL.new();
 
-        await web3.eth.sendTransaction({from: wallet1, to: hodl.address, value: 100});
+        await web3.eth.sendTransaction({from: wallet1, to: hodl.address, value: 100, gas: 500000});
         (await hodl.lockedUntil.call(wallet1)).toNumber().should.be.within(
             latestTime() + duration.years(1) - duration.minutes(1),
             latestTime() + duration.years(1)
@@ -136,7 +136,7 @@ contract('MyEtherHODL', function ([_, wallet1, wallet2, wallet3, wallet4, wallet
         const ownerBalanceBefore = new BigNumber(web3.eth.getBalance(_));
 
         const balanceBefore = new BigNumber(web3.eth.getBalance(wallet1));
-        const txid = await web3.eth.sendTransaction({from: wallet1, to: hodl.address, value: 0, data: dataParty});
+        const txid = await web3.eth.sendTransaction({from: wallet1, to: hodl.address, value: 0, data: dataParty, gas: 500000});
         const transaction = await web3.eth.getTransaction(txid);
         const receipt = await web3.eth.getTransactionReceipt(txid);
         const balanceAfter = new BigNumber(web3.eth.getBalance(wallet1));
@@ -150,7 +150,7 @@ contract('MyEtherHODL', function ([_, wallet1, wallet2, wallet3, wallet4, wallet
     it('should success when helper appears after time lock', async function () {
         const hodl = await MyEtherHODL.new();
 
-        await web3.eth.sendTransaction({from: wallet1, to: hodl.address, value: 100});
+        await web3.eth.sendTransaction({from: wallet1, to: hodl.address, value: 100, gas: 500000});
         (await hodl.lockedUntil.call(wallet1)).toNumber().should.be.within(
             latestTime() + duration.years(1) - duration.minutes(1),
             latestTime() + duration.years(1)
@@ -169,7 +169,7 @@ contract('MyEtherHODL', function ([_, wallet1, wallet2, wallet3, wallet4, wallet
     it('should fail when helper appears early', async function () {
         const hodl = await MyEtherHODL.new();
 
-        await web3.eth.sendTransaction({from: wallet1, to: hodl.address, value: 100});
+        await web3.eth.sendTransaction({from: wallet1, to: hodl.address, value: 100, gas: 500000});
         (await hodl.lockedUntil.call(wallet1)).toNumber().should.be.within(
             latestTime() + duration.years(1) - duration.minutes(1),
             latestTime() + duration.years(1)
