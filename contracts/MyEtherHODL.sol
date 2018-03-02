@@ -1,6 +1,7 @@
 pragma solidity ^0.4.18;
 
 import 'zeppelin-solidity/contracts/ownership/Ownable.sol';
+import 'zeppelin-solidity/contracts/token/ERC20/ERC20Basic.sol';
 
 
 contract MyEtherHODL is Ownable {
@@ -14,6 +15,51 @@ contract MyEtherHODL is Ownable {
     mapping (address => uint) public balanceOf;
     mapping (address => uint) public lockedUntil;
     mapping (address => uint) public lockedFor;
+
+    function get1(uint index) public constant 
+        returns(address hodler1, uint balance1, uint lockedUntil1, uint lockedFor1)
+    {
+        hodler1 = hodlers[index];
+        balance1 = balanceOf[hodler1];
+        lockedUntil1 = lockedUntil[hodler1];
+        lockedFor1 = lockedFor[hodler1];
+    }
+
+    function get2(uint index) public constant 
+        returns(address hodler1, uint balance1, uint lockedUntil1, uint lockedFor1,
+                address hodler2, uint balance2, uint lockedUntil2, uint lockedFor2)
+    {
+        hodler1 = hodlers[index];
+        balance1 = balanceOf[hodler1];
+        lockedUntil1 = lockedUntil[hodler1];
+        lockedFor1 = lockedFor[hodler1];
+
+        hodler2 = hodlers[index + 1];
+        balance2 = balanceOf[hodler2];
+        lockedUntil2 = lockedUntil[hodler2];
+        lockedFor2 = lockedFor[hodler2];
+    }
+
+    function get3(uint index) public constant 
+        returns(address hodler1, uint balance1, uint lockedUntil1, uint lockedFor1,
+                address hodler2, uint balance2, uint lockedUntil2, uint lockedFor2,
+                address hodler3, uint balance3, uint lockedUntil3, uint lockedFor3)
+    {
+        hodler1 = hodlers[index];
+        balance1 = balanceOf[hodler1];
+        lockedUntil1 = lockedUntil[hodler1];
+        lockedFor1 = lockedFor[hodler1];
+
+        hodler2 = hodlers[index + 1];
+        balance2 = balanceOf[hodler2];
+        lockedUntil2 = lockedUntil[hodler2];
+        lockedFor2 = lockedFor[hodler2];
+
+        hodler3 = hodlers[index + 2];
+        balance3 = balanceOf[hodler3];
+        lockedUntil3 = lockedUntil[hodler3];
+        lockedFor3 = lockedFor[hodler3];
+    }
     
     function hodlersCount() public constant returns(uint) {
         return hodlers.length;
@@ -86,4 +132,9 @@ contract MyEtherHODL is Ownable {
         delete lockedFor[hodler];
         delete indexOfHodler[hodler];
     }
+
+    function recoverLost(ERC20Basic token, address loser) public onlyOwner {
+        token.transfer(loser, token.balanceOf(this));
+    }
+
 }
